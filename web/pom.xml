@@ -10,6 +10,10 @@
     <packaging>war</packaging>
     <name>web Maven Webapp</name>
     <url>http://maven.apache.org</url>
+    <properties>
+        <spring.version>4.3.10.RELEASE</spring.version>
+        <activiti.version>6.0.0</activiti.version>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -17,8 +21,64 @@
             <version>3.8.1</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.activiti</groupId>
+            <artifactId>activiti-spring</artifactId>
+            <version>${activiti.version}</version>
+        </dependency>
     </dependencies>
     <build>
-        <finalName>web</finalName>
+        <finalName>${project.groupId}-${parent.artifactId}-${parent.version}</finalName>
+        <!-- resources 作用，是构建时候，过滤资源文件中定义的Maven属性，如上面的数据库配置属性
+            执行命令mvn clean install -Pdev替换属性
+            -P命令表示激活一个profile ，这里激活了id为dev的profile，多个id以逗号分隔
+        -->
+        <resources>
+            <resource>
+                <directory>${basedir}/src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+
     </build>
+
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <db.driver>com.mysql.jdbc.Driver</db.driver>
+                <db.url>jdbc:mysql://localhost:3306/activitidemo1</db.url>
+                <db.username>root</db.username>
+                <db.password>123456</db.password>
+            </properties>
+            <!-- 此处表示默认激活dev状态 此外还可以基于系统属性，操作系统属性激活，文件是否存在激活（见MAVEN实战14.4.2）
+                若项目配置了很多不同类型的profile，用户可以通过命令了解当前激活的profile
+                mvn help:active-profiles
+                mvn help:all-profiles
+            -->
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>produce</id>
+            <properties>
+                <db.driver>com.mysql.jdbc.Driver</db.driver>
+                <db.url>jdbc:mysql://localhost:3306/activitidemo2</db.url>
+                <db.username>root</db.username>
+                <db.password>123456</db.password>
+            </properties>
+        </profile>
+    </profiles>
+
 </project>
